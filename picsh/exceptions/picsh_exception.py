@@ -1,0 +1,5 @@
+
+class PicshException(Exception):
+    pass
+
+

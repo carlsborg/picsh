@@ -1,0 +1,53 @@
+#!/bin/python3
+import warnings
+warnings.filterwarnings("ignore", module="asyncssh\.crypto.*")
+import sys
+import os
+import colorama
+from picsh.controllers.root_controller import RootController
+from picsh.util import get_logo, get_tagline
+import glob
+import yaml
+
+
+def _get_cluster_specs():
+    user_dir = os.path.expanduser('~')
+    picsh_dir = os.path.join(user_dir, '.picsh')
+    if not os.path.exists(picsh_dir):
+        os.mkdir(picsh_dir)
+    wildcardpath = os.path.join(picsh_dir, "*.yaml")
+    cluster_specs = glob.glob(wildcardpath)
+    ret = []
+    for cluster_file in cluster_specs:
+        if os.path.isfile(cluster_file):
+            ret.append(cluster_file)
+    return picsh_dir, ret
+
+
+def _no_clusters_usage():
+    print("No cluster definitions found in [%s%s%s]" % (
+        colorama.Fore.GREEN, picsh_dir, colorama.Style.RESET_ALL))
+    sample_defn = '''
+    cluster_name: kubedev
+    login_user: root
+    ssh_key_path: /home/devuser/keys/k8skey
+    nodes:
+    - ip: "10.0.0.1"
+    - ip: "10.0.0.2"
+    - ip: "10.0.0.3"
+    '''
+    print("%s%sSample cluster spec .yaml file:\n%s \nSee documentation for spec yaml.%s" % (colorama.Style.DIM, colorama.Fore.WHITE, sample_defn, colorama.Style.RESET_ALL))
+
+
+if __name__ == "__main__":
+    picsh_dir, cluster_specs = _get_cluster_specs() 
+    if len(cluster_specs) == 0:
+        _no_clusters_usage()
+        sys.exit(0)
+
+    RootController(cluster_specs).run()
+    print(get_logo())
+    print(colorama.Fore.CYAN)
+    print(get_tagline())
+    print(colorama.Fore.RESET)
+
