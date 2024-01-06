@@ -69,15 +69,19 @@ class NodePanelController(BaseController):
         self.view.set_noderows(self._root_model.nodes)
 
     def handle_input_filter(self, keys, raw_input):
-        keys, new_view = self._active_controller.handle_input_filter(keys, raw_input)
-        if new_view == ViewNames.BUFFER_VIEW:
-            self.switch_to(self._receive_buffer_controller)
-        elif new_view == ViewNames.CLUSTERSHELL_VIEW:
-            self.switch_to(self._cluster_shell_controller)
-        elif new_view == ViewNames.SINGLESHELL_VIEW:
-            self.switch_to(self._single_shell_controller)
-        if new_view:
-            self._active_view_name = new_view
+        if "ctrl q" in keys:
+            keys = []
+            new_view = ViewNames.EXIT_SCREEN
+        else:
+            keys, new_view = self._active_controller.handle_input_filter(keys, raw_input)
+            if new_view == ViewNames.BUFFER_VIEW:
+                self.switch_to(self._receive_buffer_controller)
+            elif new_view == ViewNames.CLUSTERSHELL_VIEW:
+                self.switch_to(self._cluster_shell_controller)
+            elif new_view == ViewNames.SINGLESHELL_VIEW:
+                self.switch_to(self._single_shell_controller)
+            if new_view:
+                self._active_view_name = new_view
         return keys, new_view
 
         # elif self.current_view == ViewNames.BUFFER_VIEW:

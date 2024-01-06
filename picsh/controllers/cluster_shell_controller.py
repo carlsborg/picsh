@@ -106,7 +106,8 @@ class ClusterShellController(BaseController):
 
     def handle_input_filter(self, keys, raw_input):
         new_view = None
-        if "esc" in keys:
+        if "ctrl a" in keys:
+            keys = []
             new_view = ViewNames.BUFFER_VIEW
         return keys, new_view
 

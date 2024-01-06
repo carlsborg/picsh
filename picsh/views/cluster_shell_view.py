@@ -89,4 +89,5 @@ class ClusterShellView:
         return "picsh >> cluster shell"
 
     def footer_text(self):
-        return "Esc => switch to response buffer view"
+        return "Ctrl a => response buffers | Ctrl q => quit"
+ 

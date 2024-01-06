@@ -29,14 +29,11 @@ class ReceiveBufferController(BaseController):
 
     def handle_input_filter(self, keys, raw_input):
         new_view = None
-        if "/" in keys:
-            new_view = ViewNames.CLUSTERSHELL_VIEW
+        if "ctrl s" in keys:
             keys = []
+            new_view = ViewNames.CLUSTERSHELL_VIEW
         elif "enter" in keys:
             new_view = ViewNames.SINGLESHELL_VIEW
-            keys = []
-        elif "ctrl c" in keys:
-            new_view = ViewNames.EXIT_SCREEN
             keys = []
         return keys, new_view
 

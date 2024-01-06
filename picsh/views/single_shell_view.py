@@ -70,4 +70,4 @@ class SingleShellView:
         return f"picsh >> ssh to node {self._cur_node_ip}"
 
     def footer_text(self):
-        return "Ctrl a => switch to cluster shell"
+        return "Ctrl a => response buffers | Ctrl s => cluster shell  | Ctrl q => quit"

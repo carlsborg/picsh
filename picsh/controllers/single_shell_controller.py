@@ -31,9 +31,12 @@ class SingleShellController(BaseController):
 
     def handle_input_filter(self, keys, raw_input):
         new_view = None
-        if "ctrl a" in keys:
+        if "ctrl s" in keys:
             keys = []
             new_view = ViewNames.CLUSTERSHELL_VIEW
+        elif "ctrl a" in keys:
+            keys = []
+            new_view = ViewNames.BUFFER_VIEW
         return keys, new_view
 
     def activate(self, node_idx):
