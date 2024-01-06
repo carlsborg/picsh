@@ -4,26 +4,27 @@
 #
 # Licensed under the GNU Affero General Public License v3, which is available at
 # http://www.gnu.org/licenses/agpl-3.0.html
-# 
-# This program is distributed in the hope that it will be useful, but WITHOUT 
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See the GNU Affero GPL for more details.
 #
 
-
-import os 
+import logging
+import os
 import asyncio
 import urwid
 import concurrent.futures
 from collections import defaultdict
 from picsh.views.cluster_shell_view import ClusterShellView
-from picsh.models.cluster_shell_model import ClusterShellModel
+from picsh.views.view_names import ViewNames
+from picsh.models.root_model import RootModel
 from picsh.command_engine import CommandEngine
+from picsh.controllers.base_controller import BaseController
 import readline
 
 
 class _TerminalSubProcess:
-
     def __init__(self):
         self._data_fd = None
         self._control_fd = None
@@ -37,35 +38,49 @@ class _TerminalSubProcess:
         inp = ""
         while not self.done:
             try:
-                inp = input("cluster-shell$ ")
+                inp = input("$ ")
                 if inp.strip():
-                    os.write(self._data_fd, inp.encode('utf-8'))
+                    os.write(self._data_fd, inp.encode("utf-8"))
             except Exception as ex:
-                os.write(self._data_fd, str(ex).encode('utf-8'))
+                os.write(self._data_fd, str(ex).encode("utf-8"))
             except KeyboardInterrupt as ex:
                 print("Esc then Ctrl c to exit picsh")
-        #os.write(self._control_fd, "done")
+        # os.write(self._control_fd, "done")
 
 
-class ClusterShellController:
-    def __init__(self, view: ClusterShellView, model: ClusterShellModel):
-        # self._write_fd = self._loop.watch_pipe(self._on_msg)
+class ClusterShellController(BaseController):
+    def __init__(self, view: ClusterShellView, root_model: RootModel):
+        super().__init__()
         self._proc = None
-        self._view = view
-        self._model = model
+        self.view: ClusterShellView = view
+        self._model: RootModel = root_model
         for node in self._model.nodes:
             node.register_notify(self.on_command_output)
         self._command_queue = asyncio.Queue(-1)
-        self._command_engine = CommandEngine(self._model.nodes, self.on_command_output, self._command_queue)
+        self._command_engine = CommandEngine(
+            self._model.nodes, self.on_command_output, self._command_queue
+        )
         self._terminal_proc = _TerminalSubProcess()
-        self._view.register_terminal_input_cmd(self._terminal_proc.run_input_loop)
+        self.view.register_terminal_input_cmd(self._terminal_proc.run_input_loop)
+        self._activated = False
+        self._repaint_notifier = None
+
+    def set_repaint_notifier(self, notifier):
+        self._repaint_notifier = notifier
 
     def on_command_output(self):
-        self._view.repaint_shell_output(self._model.nodes)
+        self._repaint_notifier()
 
-    def refresh_nodes(self):
-        for node in self._model.nodes:
-            node.register_notify(self.on_command_output)
+    def repaint(self):
+        self.view.repaint_shell_output(self._model.nodes)
+
+    def activate(self, **kwargs):
+        if not self._activated:
+            self.set_loop(self._urwid_loop, self._aio_event_loop)
+            for node in self._model.nodes:
+                node.register_notify(self.on_command_output)
+            self._activated = True
+        self.view.set_initial_focus()
 
     def set_loop(self, mainloop, aioloop):
         data_fd = mainloop.watch_pipe(self.on_data_pipe_data)
@@ -75,16 +90,25 @@ class ClusterShellController:
 
     def on_data_pipe_data(self, s_cmdline):
         s_cmdline = s_cmdline.decode("utf-8")
-        self._model.reset_buffers()
+        self._reset_buffers()
         self._command_queue.put_nowait(s_cmdline)
+
+    def _reset_buffers(self):
+        for node in self._model.nodes:
+            node.recv_buf = ""
 
     def on_control_pipe_data(self, data):
         raise urwid.ExitMainLoop()
 
-    def handle_input(self, key):
-        return key
-
     def quit(self):
-        if self._view.term.pid:
-            self._view.term.terminate()
+        if self.view.term.pid:
+            self.view.term.terminate()
 
+    def handle_input_filter(self, keys, raw_input):
+        new_view = None
+        if "esc" in keys:
+            new_view = ViewNames.BUFFER_VIEW
+        return keys, new_view
+
+    def want_focus(self):
+        return True

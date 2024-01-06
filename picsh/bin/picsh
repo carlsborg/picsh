@@ -1,5 +1,7 @@
 #!/bin/python3
+import logging
 import warnings
+
 warnings.filterwarnings("ignore", module="asyncssh\.crypto.*")
 import sys
 import os
@@ -8,11 +10,12 @@ from picsh.controllers.root_controller import RootController
 from picsh.util import get_logo, get_tagline
 import glob
 import yaml
+from picsh.app import App
 
 
 def _get_cluster_specs():
-    user_dir = os.path.expanduser('~')
-    picsh_dir = os.path.join(user_dir, '.picsh')
+    user_dir = os.path.expanduser("~")
+    picsh_dir = os.path.join(user_dir, ".picsh")
     if not os.path.exists(picsh_dir):
         os.mkdir(picsh_dir)
     wildcardpath = os.path.join(picsh_dir, "*.yaml")
@@ -25,9 +28,11 @@ def _get_cluster_specs():
 
 
 def _no_clusters_usage():
-    print("No cluster definitions found in [%s%s%s]" % (
-        colorama.Fore.GREEN, picsh_dir, colorama.Style.RESET_ALL))
-    sample_defn = '''
+    print(
+        "No cluster definitions found in [%s%s%s]"
+        % (colorama.Fore.GREEN, picsh_dir, colorama.Style.RESET_ALL)
+    )
+    sample_defn = """
     cluster_name: kubedev
     login_user: root
     ssh_key_path: /home/devuser/keys/k8skey
@@ -35,17 +40,36 @@ def _no_clusters_usage():
     - ip: "10.0.0.1"
     - ip: "10.0.0.2"
     - ip: "10.0.0.3"
-    '''
-    print("%s%sSample cluster spec .yaml file:\n%s \nSee documentation for spec yaml.%s" % (colorama.Style.DIM, colorama.Fore.WHITE, sample_defn, colorama.Style.RESET_ALL))
+    """
+    print(
+        "%s%sSample cluster spec .yaml file:\n%s \nSee documentation for spec yaml.%s"
+        % (
+            colorama.Style.DIM,
+            colorama.Fore.WHITE,
+            sample_defn,
+            colorama.Style.RESET_ALL,
+        )
+    )
 
 
 if __name__ == "__main__":
-    picsh_dir, cluster_specs = _get_cluster_specs() 
+    picsh_dir, cluster_specs = _get_cluster_specs()
     if len(cluster_specs) == 0:
         _no_clusters_usage()
         sys.exit(0)
 
-    RootController(cluster_specs).run()
+    # TODO: if args.verbose
+    logging.basicConfig(
+        filename=os.path.join(picsh_dir, "picsh.log"),
+        encoding="utf-8",
+        level=logging.INFO,
+        format='%(asctime)s | %(levelname)8s | %(module)s : %(message)s',
+        filemode="w"
+    )
+    logging.info("\n==> picsh started")
+
+    App(cluster_specs).run()
+
     print(get_logo())
     print(colorama.Fore.CYAN)
     print(get_tagline())

@@ -4,8 +4,8 @@
 #
 # Licensed under the GNU Affero General Public License v3, which is available at
 # http://www.gnu.org/licenses/agpl-3.0.html
-# 
-# This program is distributed in the hope that it will be useful, but WITHOUT 
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See the GNU Affero GPL for more details.
 #
@@ -19,25 +19,37 @@ from picsh.widgets.listbox_with_mouse_events import ListBoxWithMouseEvents
 
 
 class ClusterShellView:
-    def __init__(self, state_change_notifier:Callable):
+    def __init__(self, state_change_notifier: Callable):
         self._state_change_notifier = state_change_notifier
         self._footer = urwid.Text("Esc => node view | Alt-C reconnect all")
         self._listbox_content = urwid.SimpleListWalker([])
         self._listbox = ListBoxWithMouseEvents(self._listbox_content)
         self._terminal_input_cmd = None
 
-        self.term = urwid.Terminal(self.terminal_command, encoding='utf-8', escape_sequence="esc")
+        self.term = urwid.Terminal(
+            self.terminal_command, encoding="utf-8", escape_sequence="esc"
+        )
         term_attr = urwid.AttrMap(self.term, "bottom")
-        #urwid.connect_signal(self.term, 'closed', quit)
+        # urwid.connect_signal(self.term, 'closed', quit)
         self.header = urwid.Text("picsh >> cluster shell view")
         self._outer_widget = urwid.Pile(
             [
-                ("fixed", 1, urwid.AttrMap(urwid.Filler(self.header), "header_style")),
                 self._listbox,
-                ("fixed", 4, urwid.LineBox(term_attr, bline="", lline="", rline="", tline="_", tlcorner="_", trcorner="")),
-                ("fixed", 1, urwid.AttrMap(urwid.Filler(self._footer), "footer_style")),
+                (
+                    "fixed",
+                    5,
+                    urwid.LineBox(
+                        term_attr,
+                        title="cluster shell",
+                        title_attr="reveal_focus",
+                        title_align="left",
+                        bline="",
+                        lline="",
+                        rline="",
+                    ),
+                ),  # , tline="_", tlcorner="_", trcorner=""
             ],
-            focus_item=2,
+            focus_item=1,
         )
         self._node_selection_filter = ""
 
@@ -51,14 +63,15 @@ class ClusterShellView:
         self._terminal_input_cmd()
 
     def repaint_shell_output(self, nodes: List[Node]):
-        list_contents =[]
+        list_contents = []
         for node in nodes:
             if not node.hide:
                 separater = f"[{str(node.idx)}] {node.ip_addr}==>"
-                list_contents.append( urwid.AttrMap(urwid.Text(separater), "output_separater" ) )
-                list_contents.append( urwid.Text(node.recv_buf) )
+                list_contents.append(
+                    urwid.AttrMap(urwid.Text(separater), "output_separater")
+                )
+                list_contents.append(urwid.Text(node.recv_buf))
         self._listbox_content[:] = urwid.SimpleListWalker(list_contents)
-
 
     def outer_widget(self):
         return self._outer_widget
@@ -66,3 +79,14 @@ class ClusterShellView:
     def log(self, msg):
         self._footer.set_text(msg)
 
+    def on_node_list_modified(self, nodes: List[Node], node_idx):
+        pass
+
+    def set_initial_focus(self):
+        self._outer_widget.set_focus(1)
+
+    def header_nav_text(self):
+        return "picsh >> cluster shell"
+
+    def footer_text(self):
+        return "Esc => switch to response buffer view"

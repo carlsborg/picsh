@@ -4,8 +4,8 @@
 #
 # Licensed under the GNU Affero General Public License v3, which is available at
 # http://www.gnu.org/licenses/agpl-3.0.html
-# 
-# This program is distributed in the hope that it will be useful, but WITHOUT 
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
 # ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
 # FOR A PARTICULAR PURPOSE. See the GNU Affero GPL for more details.
 #
@@ -18,15 +18,16 @@ from picsh.node import Node
 from picsh.widgets.listbox_with_mouse_events import ListBoxWithMouseEvents
 import os
 
+
 class ClusterSelectionView:
-    def __init__(self, state_change_notifier:Callable):
+    def __init__(self, state_change_notifier: Callable):
         self._state_change_notifier = state_change_notifier
-        footer_text = "Showing cluster specs in /home/cborg/.picsh"
+        footer_text = "cluster specs dir /home/cborg/.picsh"
         self.column_headers = urwid.AttrMap(
             urwid.Columns(
                 [
                     ("fixed", 80, urwid.Text("cluster yaml spec", align="left")),
-                    ("fixed", 6, urwid.Text("", align="left"))
+                    ("fixed", 6, urwid.Text("", align="left")),
                 ]
             ),
             "column_headers",
@@ -38,10 +39,17 @@ class ClusterSelectionView:
         textbox = self._output_textbox
 
         self._footer = urwid.Text(footer_text)
-        header = urwid.AttrMap(
-            urwid.Text("picsh >> cluster selection view"), "header_style"
+        header = urwid.AttrMap(urwid.Text("picsh >> select cluster"), "header_style")
+        self._cols = urwid.Columns(
+            [
+                ("fixed", 46, listbox),
+                (
+                    "weight",
+                    75,
+                    ListBoxWithMouseEvents(urwid.SimpleFocusListWalker([textbox])),
+                ),
+            ]
         )
-        self._cols = urwid.Columns([("fixed", 46, listbox), ("weight", 75, ListBoxWithMouseEvents(urwid.SimpleFocusListWalker([textbox])))])
         self._frame = urwid.Frame(
             self._cols,
             header=header,
@@ -59,7 +67,7 @@ class ClusterSelectionView:
     def show_cluster_spec(self, cluster_spec_paths: List[str]):
         spec_idx = self.get_selected_spec_idx()
         with open(cluster_spec_paths[spec_idx], "rt") as fh:
-            buf =fh.read()
+            buf = fh.read()
             self._output_textbox.set_text(buf)
 
     def outer_widget(self):
@@ -77,4 +85,4 @@ class ClusterSelectionView:
             self._focus == "specs"
 
     def get_selected_spec_idx(self):
-        return self.listbox_content.focus -1 
+        return self.listbox_content.focus - 1
