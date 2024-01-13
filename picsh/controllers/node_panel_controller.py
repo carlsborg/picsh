@@ -84,13 +84,3 @@ class NodePanelController(BaseController):
                 self._active_view_name = new_view
         return keys, new_view
 
-        # elif self.current_view == ViewNames.BUFFER_VIEW:
-        #     elif "enter" in keys:
-        #         nodeidx = self.buffer_view.get_selected_node_idx()
-        #         node = next(filter(lambda x: x.idx == nodeidx, self.node_model.nodes), None)
-        #         self.single_shell_controller.ensure_shell(node)
-        #         urwid.connect_signal(
-        #             self.single_shell_view._terminals[node.idx].terminal_widget,
-        #             "closed",
-        #             functools.partial(self._switch_to, node),
-        #         )

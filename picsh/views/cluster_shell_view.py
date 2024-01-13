@@ -11,9 +11,10 @@
 #
 
 
-import os
-from typing import List, Callable
+from typing import Callable, List
+
 import urwid
+
 from picsh.node import Node
 from picsh.widgets.listbox_with_mouse_events import ListBoxWithMouseEvents
 
@@ -32,13 +33,9 @@ class ClusterShellView:
         term_attr = urwid.AttrMap(self.term, "bottom")
         # urwid.connect_signal(self.term, 'closed', quit)
         self.header = urwid.Text("picsh >> cluster shell view")
-        self._outer_widget = urwid.Pile(
-            [
-                self._listbox,
-                (
-                    "fixed",
-                    5,
-                    urwid.LineBox(
+        self._outer_widget = urwid.Pile([
+                    self._listbox,
+                    ("fixed", 5,  urwid.LineBox(
                         term_attr,
                         title="cluster shell",
                         title_attr="reveal_focus",
@@ -46,10 +43,8 @@ class ClusterShellView:
                         bline="",
                         lline="",
                         rline="",
-                    ),
-                ),  # , tline="_", tlcorner="_", trcorner=""
-            ],
-            focus_item=1,
+                     ))
+            ]
         )
         self._node_selection_filter = ""
 

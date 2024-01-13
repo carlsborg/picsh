@@ -34,9 +34,13 @@ class _SingleShellTerminal:
         self.exited = False
 
     def _run_ssh_command(self):
-        os.system(
-            f"TERM=linux ssh -i {self._node.get_ssh_key_path()} {self._node.get_login_user()}@{self._node.get_ip()}"
-        )
+        key_opt = ""
+        key_path = self._node.get_ssh_key_path()
+        if key_path:
+            key_opt = f"-i {self._node.get_ssh_key_path()}"
+        ssh_cmd = f"TERM=linux ssh {key_opt} {self._node.get_login_user()}@{self._node.get_ip()}"
+        logging.info(ssh_cmd)
+        os.system(ssh_cmd)
         # self.terminal_widget.terminate()
         self.exited = True
 

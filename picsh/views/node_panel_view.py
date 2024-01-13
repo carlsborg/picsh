@@ -10,12 +10,12 @@
 # FOR A PARTICULAR PURPOSE. See the GNU Affero GPL for more details.
 #
 
-import logging
 from typing import Callable, List
+
 import urwid
-from picsh.widgets.selectable_row import SelectableRow
+
 from picsh.node import Node
-from picsh.widgets.listbox_with_mouse_events import ListBoxWithMouseEvents
+from picsh.widgets.selectable_row import SelectableRow
 
 
 class NodePanelView:
