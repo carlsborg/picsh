@@ -1,11 +1,13 @@
+from typing import List
+
 class BaseController:
     def __init__(self):
         self._urwid_loop = None
         self._aio_event_loop = None
-        self.child_controllers = []
+        self.child_controllers: List["BaseController"] = []
         self._repaint_notifier = None
 
-    def register_child_controller(self, controller):
+    def register_child_controller(self, controller: "BaseController"):
         controller.set_repaint_notifier(self.repaint_notifer)
         self.child_controllers.append(controller)
 
@@ -39,6 +41,8 @@ class BaseController:
         self.repaint()
         for c in self.child_controllers:
             c.repaint()
+        if self._urwid_loop:
+            self._urwid_loop.draw_screen()
 
     def set_repaint_notifier(self, notifier):
         self._repaint_notifier = notifier

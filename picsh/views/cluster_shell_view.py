@@ -26,13 +26,25 @@ class ClusterShellView:
         self._listbox_content = urwid.SimpleListWalker([])
         self._listbox = ListBoxWithMouseEvents(self._listbox_content)
         self._terminal_input_cmd = None
+        self._outer_widget = urwid.Filler(urwid.Text(""))
+        self._node_selection_filter = ""
+        self.term = None
 
+    def set_selection_filter(self, selection_filter):
+        self._node_selection_filter = selection_filter
+
+    def register_terminal_input_cmd(self, func):
+        self._terminal_input_cmd = func
+
+    def terminal_command(self):
+        self._terminal_input_cmd()
+
+    def initialize_input_terminal(self, urwid_loop):
         self.term = urwid.Terminal(
-            self.terminal_command, encoding="utf-8", escape_sequence="esc"
+            self.terminal_command, encoding="utf-8", main_loop=urwid_loop, escape_sequence="ctrl a"
         )
         term_attr = urwid.AttrMap(self.term, "bottom")
         # urwid.connect_signal(self.term, 'closed', quit)
-        self.header = urwid.Text("picsh >> cluster shell view")
         self._outer_widget = urwid.Pile([
                     self._listbox,
                     ("fixed", 5,  urwid.LineBox(
@@ -46,16 +58,6 @@ class ClusterShellView:
                      ))
             ]
         )
-        self._node_selection_filter = ""
-
-    def set_selection_filter(self, selection_filter):
-        self._node_selection_filter = selection_filter
-
-    def register_terminal_input_cmd(self, func):
-        self._terminal_input_cmd = func
-
-    def terminal_command(self):
-        self._terminal_input_cmd()
 
     def repaint_shell_output(self, nodes: List[Node]):
         list_contents = []

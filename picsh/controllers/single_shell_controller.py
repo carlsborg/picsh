@@ -26,9 +26,6 @@ class SingleShellController(BaseController):
     def handle_input(self, key):
         return key
 
-    def ensure_shell(self, node):
-        self.view.switch_to_terminal(node, self._urwid_loop)
-
     def handle_input_filter(self, keys, raw_input):
         new_view = None
         if "ctrl s" in keys:
@@ -41,7 +38,7 @@ class SingleShellController(BaseController):
 
     def activate(self, node_idx):
         node = next(filter(lambda x: x.idx == node_idx, self._model.nodes), None)
-        self.ensure_shell(node)
+        self.view.switch_to_terminal(node, self._urwid_loop)
         # urwid.connect_signal(
         #     self.view._terminals[node.idx].terminal_widget,
         #     "closed",

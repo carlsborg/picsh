@@ -10,13 +10,10 @@
 # FOR A PARTICULAR PURPOSE. See the GNU Affero GPL for more details.
 #
 
-
-from cmath import sin
-from re import L
+import logging
 from typing import List, Callable
 import os
 import urwid
-from picsh.widgets.selectable_row import SelectableRow
 from picsh.node import Node
 
 

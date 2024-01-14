@@ -41,6 +41,7 @@ class _TerminalSubProcess:
                 inp = input("$ ")
                 if inp.strip():
                     os.write(self._data_fd, inp.encode("utf-8"))
+                    logging.info(f"cmd={inp}")
             except Exception as ex:
                 os.write(self._data_fd, str(ex).encode("utf-8"))
             except KeyboardInterrupt as ex:
@@ -61,31 +62,33 @@ class ClusterShellController(BaseController):
             self._model.nodes, self.on_command_output, self._command_queue
         )
         self._terminal_proc = _TerminalSubProcess()
-        self.view.register_terminal_input_cmd(self._terminal_proc.run_input_loop)
         self._activated = False
-        self._repaint_notifier = None
-
-    def set_repaint_notifier(self, notifier):
-        self._repaint_notifier = notifier
 
     def on_command_output(self):
+        logging.info("got command output")
         self._repaint_notifier()
 
     def repaint(self):
+        logging.info("repainting shell output")
         self.view.repaint_shell_output(self._model.nodes)
 
     def activate(self, **kwargs):
         if not self._activated:
-            self.set_loop(self._urwid_loop, self._aio_event_loop)
+            self.make_pipes(self._urwid_loop, self._aio_event_loop)
+            self.start_command_loop(self._aio_event_loop)
             for node in self._model.nodes:
                 node.register_notify(self.on_command_output)
+            self.view.register_terminal_input_cmd(self._terminal_proc.run_input_loop)
+            self.view.initialize_input_terminal(self._urwid_loop)
             self._activated = True
         self.view.set_initial_focus()
 
-    def set_loop(self, mainloop, aioloop):
+    def make_pipes(self, mainloop, aioloop):
         data_fd = mainloop.watch_pipe(self.on_data_pipe_data)
         control_fd = mainloop.watch_pipe(self.on_control_pipe_data)
         self._terminal_proc.set_pipe(data_fd, control_fd)
+
+    def start_command_loop(self, aioloop):
         aioloop.create_task(self._command_engine.run_command_loop())
 
     def on_data_pipe_data(self, s_cmdline):
@@ -101,7 +104,7 @@ class ClusterShellController(BaseController):
         raise urwid.ExitMainLoop()
 
     def quit(self):
-        if self.view.term.pid:
+        if self.view.term and self.view.term.pid:
             self.view.term.terminate()
 
     def handle_input_filter(self, keys, raw_input):
