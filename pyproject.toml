@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "picsh"
-version = "2.0"
+version = "0.2"
 authors = [
   { name="Ran Dugal", email="opensource@clusterdyne.com" },
 ]
@@ -35,6 +35,9 @@ dependencies = [
     "pyyaml",
     "colorama"
 ]
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [project.scripts]
 picsh = "picsh.bin.picsh:main"

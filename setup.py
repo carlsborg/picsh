@@ -10,8 +10,6 @@ def read(fname):
 
 setup(
     name="picsh",
-    version="2.0",
-    packages=["picsh"],
     long_description=read("Readme.md"),
 )
 
