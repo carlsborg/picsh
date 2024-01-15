@@ -13,6 +13,14 @@ import yaml
 from picsh.app import App
 
 
+if sys.version_info.major < 3 or (sys.version_info.major == 3 and sys.version_info.minor < 6):
+    print('Picsh only works with Python 3.6 and up. Your version is %s.x Exiting.' % sys.version_info.major)
+    sys.exit(1)
+
+if 'posix' not in os.name:
+    print('Picsh has only been tested with on Linux/posix systems. Exiting')
+    sys.exit(1)
+
 def _get_cluster_specs():
     user_dir = os.path.expanduser("~")
     picsh_dir = os.path.join(user_dir, ".picsh")
@@ -51,8 +59,7 @@ def _no_clusters_usage():
         )
     )
 
-
-if __name__ == "__main__":
+def main():
     picsh_dir, cluster_specs = _get_cluster_specs()
     if len(cluster_specs) == 0:
         _no_clusters_usage()
@@ -74,4 +81,8 @@ if __name__ == "__main__":
     print(colorama.Fore.CYAN)
     print(get_tagline())
     print(colorama.Fore.RESET)
+
+
+if __name__ == "__main__":
+    main()
 

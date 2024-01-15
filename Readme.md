@@ -2,7 +2,7 @@
 picsh
 =====
 
-Parallel Interactive Cluster Shell, for rapid ad-hoc cluster ops. Also works over ssh so you can put this on a jump host.
+Parallel Interactive Cluster Shell, for rapid ad-hoc cluster ops. 
 
 #### Requirements
 
@@ -14,9 +14,10 @@ Parallel Interactive Cluster Shell, for rapid ad-hoc cluster ops. Also works ove
 
 * Fast interactive shells (re-uses the ssh session)
 * Stateful ($cd /var/log followed by $pwd gives you /var/log)
-* Ssh to single node to run full screen curses apps like top
+* Ssh to a single node to run full screen curses apps like top
 * Browse receive buffers per node
 * Keyboard and mouse driven
+* Works over ssh so you can put this on a jump host
 
 
 #### Demo

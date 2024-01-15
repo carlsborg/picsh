@@ -1,12 +1,17 @@
 #!/usr/bin/env python
 
-from distutils.core import setup
+import os
+from setuptools import setup
 
-setup(name='picsh',
-      version='1.0',
-      description='parallel interactive cluster shell',
-      author='R. Dugal',
-      author_email='ran_at_clusterdyne_dot_com',
-      url='https://github.com/carlsborg/picsh',
-      packages=['picsh'],
-     )
+
+def read(fname):
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+
+setup(
+    name="picsh",
+    version="2.0",
+    packages=["picsh"],
+    long_description=read("Readme.md"),
+)
+
