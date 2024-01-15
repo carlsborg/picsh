@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "picsh"
+version = "2.0"
+authors = [
+  { name="Ran Dugal", email="opensource@clusterdyne.com" },
+]
+description = "Parallel Interactive Cluster Shell, for rapid ad-hoc cluster ops"
+readme = "Readme.md"
+requires-python = ">=3.6"
+license = {text = "AGPL3"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: GNU Affero General Public License v3",
+    "Operating System :: OS Independent",
+    "Topic :: System :: Distributed Computing",
+    "Topic :: System :: System Shells",
+    "Topic :: System :: Systems Administration",
+    "Topic :: System :: Clustering",
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Environment :: Console :: Curses",
+    'Operating System :: POSIX',
+    'Intended Audience :: Developers',
+    'Intended Audience :: System Administrators',
+    'Intended Audience :: Information Technology',
+    'Natural Language :: English'
+]
+dependencies = [
+    "asyncssh",
+    "urwid",
+    "pyyaml",
+    "colorama"
+]
+
+[project.scripts]
+picsh = "picsh.bin.picsh:main"
+
+[project.urls]
+Homepage = "https://github.com/carlsborg/picsh"
+Issues = "https://github.com/carlsborg/picsh/issues"
+
