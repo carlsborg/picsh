@@ -9,6 +9,12 @@ Parallel Interactive Cluster Shell, for rapid ad-hoc cluster ops.
 * Tested on Linux only (Fedora 35, Amazon Linux 2, Ubuntu 18)
 * Tested with Python 3.6 and up
 
+
+#### Install
+
+$pip install picsh
+
+
 #### Features
 
 
