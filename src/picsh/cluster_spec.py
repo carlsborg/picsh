@@ -13,21 +13,12 @@
 
 import os
 import yaml
+from typing import Optional, Dict
 from picsh.exceptions.picsh_exception import PicshException
 from picsh.node import Node
 
 
 class ClusterSpec:
-    def __init__(self, path_to_yaml: str):
-        if not os.path.exists(path_to_yaml):
-            raise PicshException(
-                f"Cluster spec [{path_to_yaml}] yaml file does not exist."
-            )
-        with open(path_to_yaml, "r") as fh:
-            self.cluster_spec = yaml.safe_load(fh.read())
-        self.nodes = self._nodes_from_cluster_spec(self.cluster_spec)
-        self.name = "(missing)"
-
     def _nodes_from_cluster_spec(self, cluster):
         # globals
         hydrated_nodes = []
@@ -42,3 +33,21 @@ class ClusterSpec:
             n.idx = idx
             hydrated_nodes.append(n)
         return hydrated_nodes
+
+
+class FileClusterSpec(ClusterSpec):
+    def __init__(self, path_to_yaml: str):
+        if not os.path.exists(path_to_yaml):
+            raise PicshException(
+                f"Cluster spec [{path_to_yaml}] yaml file does not exist."
+            )
+        with open(path_to_yaml, "r") as fh:
+            self.cluster_spec = yaml.safe_load(fh.read())
+        self.nodes = self._nodes_from_cluster_spec(self.cluster_spec)
+
+
+class ObjClusterSpec(ClusterSpec):
+    def __init__(self, obj_data: Optional[Dict] = None):
+        self.nodes = self._nodes_from_cluster_spec(obj_data)
+        self.name = obj_data.get("cluster_name") or "(un-named)"
+

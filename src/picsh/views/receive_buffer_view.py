@@ -38,4 +38,4 @@ class ReceiveBufferView:
         return "picsh >> response buffers"
 
     def footer_text(self):
-        return "Ctrl s => cluster shell | Enter => single node ssh | Ctrl q => quit"
+        return [("footer_title", "Ctrl S"), " cluster shell ", ("footer_title", "Enter"), " node ssh ", ("footer_title", "Ctrl Q"), " quit ", ]

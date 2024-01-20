@@ -41,7 +41,7 @@ class ClusterShellView:
 
     def initialize_input_terminal(self, urwid_loop):
         self.term = urwid.Terminal(
-            self.terminal_command, encoding="utf-8", main_loop=urwid_loop, escape_sequence="ctrl a"
+            self.terminal_command, encoding="utf-8", main_loop=urwid_loop, escape_sequence="ctrl s"
         )
         term_attr = urwid.AttrMap(self.term, "bottom")
         # urwid.connect_signal(self.term, 'closed', quit)
@@ -86,5 +86,5 @@ class ClusterShellView:
         return "picsh >> cluster shell"
 
     def footer_text(self):
-        return "Ctrl a => response buffers | Ctrl q => quit"
- 
+        return [("footer_title", "Ctrl B"), " buffers ", ("footer_title", "Ctrl Q"), " quit ", ]
+

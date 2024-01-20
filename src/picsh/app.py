@@ -12,7 +12,7 @@
 
 
 import urwid
-
+from typing import List, Dict
 from picsh.controllers.cluster_selection_controller import ClusterSelectionController
 from picsh.controllers.cluster_shell_controller import ClusterShellController
 from picsh.controllers.node_panel_controller import NodePanelController
@@ -29,8 +29,9 @@ from picsh.views.single_shell_view import SingleShellView
 
 
 class App:
-    def __init__(self, cluster_specs):
-        self._cluster_specs = cluster_specs
+    def __init__(self, cluster_spec_paths: List[str], cluster_spec:Dict):
+        self._cluster_spec_paths: List[str] = cluster_spec_paths
+        self._cluster_spec: Dict = cluster_spec
 
     def run(self):
         urwid.set_encoding("utf8")
@@ -41,7 +42,7 @@ class App:
             ("node_list", "dark gray", "black", "standout"),
             ("header_style", "dark cyan", "black"),
             ("footer", "black", "yellow"),
-            ("footer_title", "white", "dark red"),
+            ("footer_title", "dark cyan", "white"),
             ("footer_style", "black", "white"),
             ("reveal_focus", "black", "dark cyan", "standout"),
             ("node_text", "light gray", "black"),
@@ -50,13 +51,13 @@ class App:
             ("cmdshell", "white", "black", "standout"),
         ]
 
-        root_model = RootModel(cluster_spec_paths=self._cluster_specs)
+        root_model = RootModel(cluster_spec_paths=self._cluster_spec_paths, cluster_spec=self._cluster_spec)
         state_change_notifier = StateChangeNotifier(root_model.state_change_listener)
 
-        root_controller = self._controller_hierarchy(state_change_notifier, root_model)
-        root_controller.run(palette)
+        root_controller = self._controller_hierarchy(palette, state_change_notifier, root_model)
+        root_controller.run()
 
-    def _controller_hierarchy(self, state_change_notifier, root_model):
+    def _controller_hierarchy(self, palette, state_change_notifier, root_model):
         # RootController
         #   -> ClusterSelectionController
         #   -> NodePanelController
@@ -97,8 +98,9 @@ class App:
         )
 
         root_controller = RootController(
-            state_change_notifier,
+            palette,
             root_model,
+            state_change_notifier,
             cluster_selection_controller,
             node_panel_controller,
         )

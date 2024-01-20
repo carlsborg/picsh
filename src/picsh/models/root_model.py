@@ -19,9 +19,10 @@ from typing import List, Mapping, Dict, Any, MutableMapping
 
 
 class RootModel:
-    def __init__(self, nodes=None, cluster_spec_paths=None, node_selection_filter=""):
+    def __init__(self, nodes=None, cluster_spec_paths=None, cluster_spec=None, node_selection_filter=""):
         self.nodes: List[SSHTargetNode] = nodes or []
         self.cluster_spec_paths: List[str] = cluster_spec_paths or []
+        self.cluster_spec = cluster_spec or {}
         self.node_selection_filter: str = node_selection_filter
 
     def __setattr__(self, __name: str, __value: Any) -> None:

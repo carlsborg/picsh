@@ -15,7 +15,7 @@ from picsh.controllers.base_controller import BaseController
 from picsh.state_change_notifier import StateChangeNotifier
 from picsh.views.cluster_selection_view import ClusterSelectionView
 from picsh.models.root_model import RootModel
-from picsh.cluster_spec import ClusterSpec
+from picsh.cluster_spec import FileClusterSpec
 from picsh.views.view_names import ViewNames
 
 
@@ -41,7 +41,7 @@ class ClusterSelectionController(BaseController):
         if "enter" in keys:
             nodeidx = self.view.get_selected_spec_idx()
             cluster_spec_path = self._model.cluster_spec_paths[nodeidx]
-            cluster_spec = ClusterSpec(cluster_spec_path)
+            cluster_spec = FileClusterSpec(cluster_spec_path)
             self._state_change_notifier.notify({"nodes": cluster_spec.nodes})
             keys = []
             new_view = ViewNames.NODE_PANEL_VIEW

@@ -65,11 +65,9 @@ class ClusterShellController(BaseController):
         self._activated = False
 
     def on_command_output(self):
-        logging.info("got command output")
         self._repaint_notifier()
 
     def repaint(self):
-        logging.info("repainting shell output")
         self.view.repaint_shell_output(self._model.nodes)
 
     def activate(self, **kwargs):
@@ -109,7 +107,7 @@ class ClusterShellController(BaseController):
 
     def handle_input_filter(self, keys, raw_input):
         new_view = None
-        if "ctrl a" in keys:
+        if "ctrl b" in keys:
             keys = []
             new_view = ViewNames.BUFFER_VIEW
         return keys, new_view

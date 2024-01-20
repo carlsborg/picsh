@@ -19,7 +19,8 @@ $pip install picsh
 
 
 * Fast interactive shells (re-uses the ssh session)
-* Stateful ($cd /var/log followed by $pwd gives you /var/log)
+* Stateful (cd /var/log followed by pwd gives you /var/log)
+* Target a subset of nodes (@2,3,4 mkdir /etc/newconfd)
 * Ssh to a single node to run full screen curses apps like top
 * Browse receive buffers per node
 * Keyboard and mouse driven
@@ -31,9 +32,17 @@ $pip install picsh
 ![picsh demo](https://github.com/carlsborg/carlsborg_media_assets/blob/main/picsh-demo3.gif?raw=true)
 
 
-#### Setup
+#### Usage
 
-* Create a cluster yaml and put it in ~.picsh/cluster_name.yaml. 
+* Using the command line args:
+
+```
+$picsh -i /home/bob/.keys/slurm_host_key -l ec2-user -h 10.1.0.23 10.1.0.24 10.1.0.25
+```
+
+* Using static cluster configs: 
+
+Create a cluster yaml and put it in ~.picsh/cluster_name.yaml. 
 
 Example:  
 
@@ -50,5 +59,13 @@ nodes:
   - ip: "10.0.31.113"
   - ip: "10.0.18.254"
 ```
+
+then run 
+
+```
+$picsh
+```
+
+To get a debug log in ~/.picsh , pass -v on the command line
 
 

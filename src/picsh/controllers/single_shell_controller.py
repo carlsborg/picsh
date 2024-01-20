@@ -31,7 +31,7 @@ class SingleShellController(BaseController):
         if "ctrl s" in keys:
             keys = []
             new_view = ViewNames.CLUSTERSHELL_VIEW
-        elif "ctrl a" in keys:
+        elif "ctrl b" in keys:
             keys = []
             new_view = ViewNames.BUFFER_VIEW
         return keys, new_view
